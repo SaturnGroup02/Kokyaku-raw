@@ -1,27 +1,18 @@
 -- ============================================================================
--- はーU-HUB
--- Rayfield UI / amethyst theme / 日本語
+-- はーU-HUB (Rayfield / Amethyst / 日本語)
+-- 機能: 縦ハート / 羽V2 / アンチ機能(全て)
 -- ============================================================================
 
--- ============================================================================
--- Rayfield読み込み
--- ============================================================================
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
--- ============================================================================
--- サービス
--- ============================================================================
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
-local PhysicsService = game:GetService("PhysicsService")
-local HttpService = game:GetService("HttpService")
 local SoundService = game:GetService("SoundService")
 
 local LocalPlayer = Players.LocalPlayer
-local Camera = workspace.CurrentCamera
 
 -- ============================================================================
 -- 音声
@@ -156,7 +147,7 @@ local Window = Rayfield:CreateWindow({
     Name = "はーU-HUB",
     LoadingTitle = "はーU-HUB",
     LoadingSubtitle = "読み込み中...",
-    Theme = "amethyst",
+    Theme = "Amethyst",
     ConfigurationSaving = {
         Enabled = false,
         FolderName = nil,
@@ -301,7 +292,7 @@ end
 -- ============================================================================
 -- 縦ハート機能
 -- ============================================================================
-function toggleVerticalHeart(state)
+local function toggleVerticalHeart(state)
     VerticalHeartConfig.Enabled = state
     if state then
         PlayActionSound()
@@ -423,11 +414,10 @@ local currentObjLabel = ObjectTab:CreateLabel("現在: " .. ObjectIDConfig.Curre
 
 ObjectTab:CreateSection("オブジェクトを選択")
 
-local objectDropdown
-objectDropdown = ObjectTab:CreateDropdown({
+ObjectTab:CreateDropdown({
     Name = "オブジェクトID",
     Options = ObjectIDConfig.AvailableObjects,
-    CurrentOption = ObjectIDConfig.CurrentObjectID,
+    CurrentOption = {ObjectIDConfig.CurrentObjectID},
     MultipleOptions = false,
     Flag = "ObjectIDSelect",
     Callback = function(option)
@@ -603,9 +593,7 @@ HeartTab:CreateSlider({
 -- ============================================================================
 local AntiTab = Window:CreateTab("アンチタブ", 4483362458)
 
--- ---------------------------------------------------------------------------
 -- Anti Grab シンプル
--- ---------------------------------------------------------------------------
 AntiTab:CreateSection("掴まれても脱出 (シンプル)")
 local antiGrabSimpleEnabled = false
 
@@ -636,9 +624,7 @@ RunService.Heartbeat:Connect(function()
     end
 end)
 
--- ---------------------------------------------------------------------------
 -- Anti Grab V2
--- ---------------------------------------------------------------------------
 AntiTab:CreateSection("Anti Grab V2 (強化)")
 local antiGrabV2Enabled = false
 local heldConnectionV2 = nil
@@ -727,9 +713,7 @@ LocalPlayer.CharacterAdded:Connect(function()
     if antiGrabV2Enabled then StartAntiGrabV2() end
 end)
 
--- ---------------------------------------------------------------------------
 -- Anti Gucci
--- ---------------------------------------------------------------------------
 AntiTab:CreateSection("Anti Gucci")
 local autoGucciActive = false
 local autoGucciConn = nil
@@ -863,9 +847,7 @@ AntiTab:CreateToggle({
     end
 })
 
--- ---------------------------------------------------------------------------
 -- Anti Void
--- ---------------------------------------------------------------------------
 AntiTab:CreateSection("Anti Void")
 local originalFallenHeight = Workspace.FallenPartsDestroyHeight
 
@@ -894,5 +876,5 @@ PlayActionSound()
 notify("はーU-HUB", "起動完了しました", 5)
 
 print("==========================================")
-print("はーU-HUB起動完了"
+print("はーU-HUB 起動完了 / Rayfield Amethyst")
 print("==========================================")
