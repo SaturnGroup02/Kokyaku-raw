@@ -1,6 +1,6 @@
 -- ============================================================================
 -- はーU-HUB (Rayfield / Amethyst / 日本語)
--- 機能: 縦ハート / 羽V2 / アンチ機能(全て)
+-- 機能: 縦ハート / 羽V2 / アンチ機能(全て) / 三人称視点
 -- ============================================================================
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
@@ -54,19 +54,63 @@ local function notify(title, content, duration)
 end
 
 -- ============================================================================
--- オブジェクトID設定
+-- オブジェクトID設定（表示名のみ日本語翻訳）
 -- ============================================================================
 local ObjectIDConfig = {
     CurrentObjectID = "FireworkSparkler",
     AvailableObjects = {
-        "FireworkSparkler", "PalletLightBrown", "GlassBoxGray", "MusicKeyboard",
-        "SpookyCandle1", "Tetracube1", "NinjaKatana", "YouDecoy", "BombMissile",
-        "LadderLightBrown", "CreatureBlobman", "DiscoColorBall", "MineralCrystalPink",
-        "FloatingIsland", "FlyingToyUfo", "JukeboxBlue", "JukeboxOrange", "CouchBlue",
-        "CouchPink", "CouchWhite", "Boombox", "FireworkMissile", "Snowflake",
-        "SpookyCandle5", "MineralDiamond", "TractorGreen", "TractorOrange", "TractorRed"
+        {id = "FireworkSparkler",   jp = "線香花火"},
+        {id = "PalletLightBrown",   jp = "茶色パレット"},
+        {id = "GlassBoxGray",       jp = "灰色ガラス箱"},
+        {id = "MusicKeyboard",      jp = "キーボード"},
+        {id = "SpookyCandle1",      jp = "お化けキャンドル1"},
+        {id = "Tetracube1",         jp = "テトラキューブ"},
+        {id = "NinjaKatana",        jp = "忍者刀"},
+        {id = "YouDecoy",           jp = "デコイ人形"},
+        {id = "BombMissile",        jp = "爆弾ミサイル"},
+        {id = "LadderLightBrown",   jp = "茶色はしご"},
+        {id = "CreatureBlobman",    jp = "ブロブマン"},
+        {id = "DiscoColorBall",     jp = "ディスコボール"},
+        {id = "MineralCrystalPink", jp = "ピンク結晶"},
+        {id = "FloatingIsland",     jp = "浮遊島"},
+        {id = "FlyingToyUfo",       jp = "UFO"},
+        {id = "JukeboxBlue",        jp = "青ジュークボックス"},
+        {id = "JukeboxOrange",      jp = "橙ジュークボックス"},
+        {id = "CouchBlue",          jp = "青ソファ"},
+        {id = "CouchPink",          jp = "ピンクソファ"},
+        {id = "CouchWhite",         jp = "白ソファ"},
+        {id = "Boombox",            jp = "ラジカセ"},
+        {id = "FireworkMissile",    jp = "花火ミサイル"},
+        {id = "Snowflake",          jp = "雪の結晶"},
+        {id = "SpookyCandle5",      jp = "お化けキャンドル5"},
+        {id = "MineralDiamond",     jp = "ダイヤモンド"},
+        {id = "TractorGreen",       jp = "緑トラクター"},
+        {id = "TractorOrange",      jp = "橙トラクター"},
+        {id = "TractorRed",         jp = "赤トラクター"},
     }
 }
+
+local function getJpName(id)
+    for _, obj in ipairs(ObjectIDConfig.AvailableObjects) do
+        if obj.id == id then return obj.jp end
+    end
+    return id
+end
+
+local function getIdFromJp(jp)
+    for _, obj in ipairs(ObjectIDConfig.AvailableObjects) do
+        if obj.jp == jp then return obj.id end
+    end
+    return nil
+end
+
+local function getJpNameList()
+    local names = {}
+    for _, obj in ipairs(ObjectIDConfig.AvailableObjects) do
+        table.insert(names, obj.jp)
+    end
+    return names
+end
 
 -- ============================================================================
 -- 共通関数
@@ -386,7 +430,7 @@ local function changeObjectID(id)
     task.wait(0.4)
     if wasWing then toggleWing(true) end
     if wasHeart then toggleVerticalHeart(true) end
-    notify("オブジェクトID変更", id .. " に切り替えました")
+    notify("オブジェクトID変更", getJpName(id) .. " に切り替えました")
 end
 
 -- ============================================================================
@@ -410,21 +454,22 @@ local isHeldValue = LocalPlayer:FindFirstChild("IsHeld") or LocalPlayer:WaitForC
 local ObjectTab = Window:CreateTab("オブジェクトの種類を選択", 4483362458)
 
 ObjectTab:CreateSection("現在のオブジェクト")
-local currentObjLabel = ObjectTab:CreateLabel("現在: " .. ObjectIDConfig.CurrentObjectID)
+local currentObjLabel = ObjectTab:CreateLabel("現在: " .. getJpName(ObjectIDConfig.CurrentObjectID))
 
 ObjectTab:CreateSection("オブジェクトを選択")
 
 ObjectTab:CreateDropdown({
     Name = "オブジェクトID",
-    Options = ObjectIDConfig.AvailableObjects,
-    CurrentOption = {ObjectIDConfig.CurrentObjectID},
+    Options = getJpNameList(),
+    CurrentOption = {getJpName(ObjectIDConfig.CurrentObjectID)},
     MultipleOptions = false,
     Flag = "ObjectIDSelect",
     Callback = function(option)
-        local id = type(option) == "table" and option[1] or option
-        if id and id ~= "" then
+        local jp = type(option) == "table" and option[1] or option
+        local id = getIdFromJp(jp)
+        if id then
             changeObjectID(id)
-            pcall(function() currentObjLabel:Set("現在: " .. id) end)
+            pcall(function() currentObjLabel:Set("現在: " .. jp) end)
         end
     end
 })
@@ -433,7 +478,7 @@ ObjectTab:CreateButton({
     Name = "現在のオブジェクトIDを表示",
     Callback = function()
         PlayActionSound()
-        notify("現在のオブジェクト", ObjectIDConfig.CurrentObjectID, 3)
+        notify("現在のオブジェクト", getJpName(ObjectIDConfig.CurrentObjectID), 3)
     end
 })
 
@@ -864,6 +909,38 @@ AntiTab:CreateToggle({
         else
             Workspace.FallenPartsDestroyHeight = originalFallenHeight
             notify("Anti Void", "無効化されました")
+        end
+    end
+})
+
+-- ============================================================================
+-- その他ユーティリティ (アンチタブ内)
+-- ============================================================================
+AntiTab:CreateSection("その他ユーティリティ")
+
+local originalCameraMode = LocalPlayer.CameraMode
+local originalMaxZoom = LocalPlayer.CameraMaxZoomDistance
+local originalMinZoom = LocalPlayer.CameraMinZoomDistance
+
+AntiTab:CreateToggle({
+    Name = "三人称視点",
+    CurrentValue = false,
+    Flag = "ThirdPersonView",
+    Callback = function(Value)
+        if Value then
+            PlayActionSound()
+            originalCameraMode = LocalPlayer.CameraMode
+            originalMaxZoom = LocalPlayer.CameraMaxZoomDistance
+            originalMinZoom = LocalPlayer.CameraMinZoomDistance
+            LocalPlayer.CameraMode = Enum.CameraMode.Classic
+            LocalPlayer.CameraMaxZoomDistance = 100
+            LocalPlayer.CameraMinZoomDistance = 0.5
+            notify("三人称視点", "有効化されました")
+        else
+            LocalPlayer.CameraMode = originalCameraMode or Enum.CameraMode.LockFirstPerson
+            LocalPlayer.CameraMaxZoomDistance = originalMaxZoom or 0.5
+            LocalPlayer.CameraMinZoomDistance = originalMinZoom or 0.5
+            notify("三人称視点", "無効化されました")
         end
     end
 })
